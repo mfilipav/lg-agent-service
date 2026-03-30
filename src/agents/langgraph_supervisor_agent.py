@@ -55,7 +55,7 @@ workflow = create_supervisor(
         "For math problems, use math_agent."
     ),
     add_handoff_back_messages=True,
-    # UI now expects this to be True so we don't have to guess when a handoff back occurs
+    # UI expects this to be True so we don't have to guess when a handoff back occurs
     output_mode="full_history",  # otherwise when reloading conversations, the sub-agents' messages are not included
 )
 

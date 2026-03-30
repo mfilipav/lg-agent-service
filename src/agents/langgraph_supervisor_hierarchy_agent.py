@@ -26,8 +26,10 @@ def workflow(chosen_model):
         .compile(
             name="sub-agent-research_expert"
         )  # Identify the graph node as a sub-agent to the main supervisor
-        .with_config(tags=["skip_stream"])
-    )  # Stream tokens are ignored for sub-agents in the UI
+        .with_config(
+            tags=["skip_stream"]
+        )  # Stream tokens are ignored for sub-agents in the UI
+    )
 
     # Create supervisor workflow
     return create_supervisor(
