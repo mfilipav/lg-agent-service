@@ -152,6 +152,8 @@ class AgentClient:
         """
         if not self.agent:
             raise AgentClientError("No agent selected. Use update_agent() to select an agent.")
+
+        # prepare request (UserInput)
         request = UserInput(message=message)
         if thread_id:
             request.thread_id = thread_id
@@ -161,6 +163,8 @@ class AgentClient:
             request.agent_config = agent_config
         if user_id:
             request.user_id = user_id
+
+        # post request, expect ChatMessage response
         try:
             response = httpx.post(
                 f"{self.base_url}/{self.agent}/invoke",
@@ -229,6 +233,8 @@ class AgentClient:
         """
         if not self.agent:
             raise AgentClientError("No agent selected. Use update_agent() to select an agent.")
+
+        # prepare request
         request = StreamInput(message=message, stream_tokens=stream_tokens)
         if thread_id:
             request.thread_id = thread_id
@@ -238,6 +244,8 @@ class AgentClient:
             request.model = model  # type: ignore[assignment]
         if agent_config:
             request.agent_config = agent_config
+
+        # post request, stream response body
         try:
             with httpx.stream(
                 "POST",
@@ -249,6 +257,7 @@ class AgentClient:
                 response.raise_for_status()
                 for line in response.iter_lines():
                     if line.strip():
+                        # get ChatMessage
                         parsed = self._parse_stream_line(line)
                         if parsed is None:
                             break

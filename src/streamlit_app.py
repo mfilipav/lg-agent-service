@@ -30,7 +30,9 @@ USER_ID_COOKIE = "user_id"
 
 
 def get_or_create_user_id() -> str:
-    """Get the user ID from session state or URL parameters, or create a new one if it doesn't exist."""
+    """Get the user ID from session state or URL parameters,
+    or create a new one if it doesn't exist.
+    """
     # Check if user_id exists in session state
     if USER_ID_COOKIE in st.session_state:
         return st.session_state[USER_ID_COOKIE]
@@ -119,9 +121,10 @@ async def main() -> None:
     with st.sidebar:
         st.header(f"{APP_ICON} {APP_TITLE}")
 
-        ""
-        "Full toolkit for running an AI agent service built with LangGraph, FastAPI and Streamlit"
-        ""
+        """
+        Full toolkit for running an AI agent service built with
+        LangGraph, FastAPI and Streamlit
+        """
 
         if st.button(":material/chat: New Chat", use_container_width=True):
             st.session_state.messages = []
@@ -239,7 +242,7 @@ async def main() -> None:
             audio_data = st.session_state.last_audio
             st.audio(audio_data["data"], format=audio_data["format"])
 
-    # Generate new message if the user provided new input
+    # 1. Generate new message if the user provided new input
     # Use voice manager if available, otherwise fall back to regular input
     # REQUIRED: Set VOICE_STT_PROVIDER, VOICE_TTS_PROVIDER, OPENAI_API_KEY
     # in app .env (NOT service .env) to enable voice features.
@@ -252,6 +255,7 @@ async def main() -> None:
         messages.append(ChatMessage(type="human", content=user_input))
         st.chat_message("human").write(user_input)
         try:
+            # OPTION 1: streaming
             if use_streaming:
                 stream = agent_client.astream(
                     message=user_input,
@@ -274,6 +278,7 @@ async def main() -> None:
                             audio_only=True,
                         )
             else:
+                # OPTION 2: async invoke
                 response = await agent_client.ainvoke(
                     message=user_input,
                     model=model,
@@ -328,7 +333,7 @@ async def draw_messages(
     streaming_content = ""
     streaming_placeholder = None
 
-    # Iterate over the messages and draw them
+    # Iterate over the messages and draw them, according to msg type
     while msg := await anext(messages_agen, None):
         # str message represents an intermediate token being streamed
         if isinstance(msg, str):
